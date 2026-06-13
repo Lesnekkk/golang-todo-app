@@ -1,0 +1,191 @@
+{
+  "info": {
+    "name": "golang-todoapp",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseurl",
+      "value": "http://localhost:8080/api/v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "create user - with phone",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"full_name\": \"Ivan Ivanov\",\n    \"phone_number\": \"+79998887766\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {"raw": "{{baseurl}}/users", "host": ["{{baseurl}}"], "path": ["users"]}
+          }
+        },
+        {
+          "name": "create user - without phone",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"full_name\": \"Ivan Ivanov\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {"raw": "{{baseurl}}/users", "host": ["{{baseurl}}"], "path": ["users"]}
+          }
+        },
+        {
+          "name": "get users",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseurl}}/users?limit=10&offset=0", "host": ["{{baseurl}}"], "path": ["users"], "query": [{"key": "limit", "value": "10"}, {"key": "offset", "value": "0"}]}
+          }
+        },
+        {
+          "name": "get user by id",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseurl}}/users/:id", "host": ["{{baseurl}}"], "path": ["users", ":id"], "variable": [{"key": "id", "value": ""}]}
+          }
+        },
+        {
+          "name": "patch user - change name",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"full_name\": \"Updated Name\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {"raw": "{{baseurl}}/users/:id", "host": ["{{baseurl}}"], "path": ["users", ":id"], "variable": [{"key": "id", "value": ""}]}
+          }
+        },
+        {
+          "name": "patch user - clear phone",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"phone_number\": null\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {"raw": "{{baseurl}}/users/:id", "host": ["{{baseurl}}"], "path": ["users", ":id"], "variable": [{"key": "id", "value": ""}]}
+          }
+        },
+        {
+          "name": "delete user",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseurl}}/users/:id", "host": ["{{baseurl}}"], "path": ["users", ":id"], "variable": [{"key": "id", "value": ""}]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "tasks",
+      "item": [
+        {
+          "name": "create task",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Купить продукты\",\n    \"description\": \"Хлеб и молоко\",\n    \"author_user_id\": \"\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {"raw": "{{baseurl}}/tasks", "host": ["{{baseurl}}"], "path": ["tasks"]}
+          }
+        },
+        {
+          "name": "get tasks (all)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseurl}}/tasks", "host": ["{{baseurl}}"], "path": ["tasks"]}
+          }
+        },
+        {
+          "name": "get tasks by user_id",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseurl}}/tasks?user_id=", "host": ["{{baseurl}}"], "path": ["tasks"], "query": [{"key": "user_id", "value": ""}]}
+          }
+        },
+        {
+          "name": "get task by id",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseurl}}/tasks/:id", "host": ["{{baseurl}}"], "path": ["tasks", ":id"], "variable": [{"key": "id", "value": ""}]}
+          }
+        },
+        {
+          "name": "patch task - complete",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"completed\": true\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {"raw": "{{baseurl}}/tasks/:id", "host": ["{{baseurl}}"], "path": ["tasks", ":id"], "variable": [{"key": "id", "value": ""}]}
+          }
+        },
+        {
+          "name": "patch task - update title and clear description",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Новое название\",\n    \"description\": null\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {"raw": "{{baseurl}}/tasks/:id", "host": ["{{baseurl}}"], "path": ["tasks", ":id"], "variable": [{"key": "id", "value": ""}]}
+          }
+        },
+        {
+          "name": "delete task",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseurl}}/tasks/:id", "host": ["{{baseurl}}"], "path": ["tasks", ":id"], "variable": [{"key": "id", "value": ""}]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "statistics",
+      "item": [
+        {
+          "name": "get statistics (all)",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseurl}}/statistics", "host": ["{{baseurl}}"], "path": ["statistics"]}
+          }
+        },
+        {
+          "name": "get statistics by user_id",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseurl}}/statistics?user_id=", "host": ["{{baseurl}}"], "path": ["statistics"], "query": [{"key": "user_id", "value": ""}]}
+          }
+        },
+        {
+          "name": "get statistics by date range",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseurl}}/statistics?from=2026-01-01&to=2026-12-31", "host": ["{{baseurl}}"], "path": ["statistics"], "query": [{"key": "from", "value": "2026-01-01"}, {"key": "to", "value": "2026-12-31"}]}
+          }
+        }
+      ]
+    }
+  ]
+}
