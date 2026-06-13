@@ -57,3 +57,15 @@ env-port-close:
 	@docker compose down port-forwarder
 
 
+
+todoapp-run:
+	@go run cmd/todoapp/main.go
+
+app-up:
+	@docker compose up --build -d todoapp
+
+app-down:
+	@docker compose down todoapp
+
+app-logs:
+	@docker compose logs -f todoapp

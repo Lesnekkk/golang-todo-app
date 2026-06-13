@@ -1,0 +1,77 @@
+package domain
+
+import (
+	"fmt"
+	"regexp"
+
+	"github.com/google/uuid"
+	core_errors "github.com/Lesnekkk/golang-todo-app/internal/core/errors"
+)
+
+type User struct {
+	ID      uuid.UUID
+	Version int
+
+	FullName    string
+	PhoneNumber *string
+}
+
+func NewUser(id uuid.UUID, version int, fullName string, phoneNumber *string) User {
+	return User{ID: id, Version: version, FullName: fullName, PhoneNumber: phoneNumber}
+}
+
+func CreateUser(fullName string, phoneNumber *string) User {
+	return NewUser(uuid.New(), 1, fullName, phoneNumber)
+}
+
+func (u *User) Validate() error {
+	fullNameLen := len([]rune(u.FullName))
+	if fullNameLen < 3 || fullNameLen > 100 {
+		return fmt.Errorf("invalid `FullName` len: %d: %w", fullNameLen, core_errors.ErrInvalidArgument)
+	}
+
+	if u.PhoneNumber != nil {
+		phoneLen := len([]rune(*u.PhoneNumber))
+		if phoneLen < 10 || phoneLen > 15 {
+			return fmt.Errorf("invalid `PhoneNumber` len: %d: %w", phoneLen, core_errors.ErrInvalidArgument)
+		}
+
+		re := regexp.MustCompile(`^\+[0-9]+$`)
+		if !re.MatchString(*u.PhoneNumber) {
+			return fmt.Errorf("invalid `PhoneNumber` format: %w", core_errors.ErrInvalidArgument)
+		}
+	}
+
+	return nil
+}
+
+type UserPatch struct {
+	FullName    Nullable[string]
+	PhoneNumber Nullable[string]
+}
+
+func NewUserPatch(fullName Nullable[string], phoneNumber Nullable[string]) UserPatch {
+	return UserPatch{FullName: fullName, PhoneNumber: phoneNumber}
+}
+
+func (u *User) ApplyPatch(patch UserPatch) error {
+	if patch.FullName.Set && patch.FullName.Value == nil {
+		return fmt.Errorf("`FullName` can't be patched to NULL: %w", core_errors.ErrInvalidArgument)
+	}
+
+	tmp := *u
+
+	if patch.FullName.Set {
+		tmp.FullName = *patch.FullName.Value
+	}
+	if patch.PhoneNumber.Set {
+		tmp.PhoneNumber = patch.PhoneNumber.Value
+	}
+
+	if err := tmp.Validate(); err != nil {
+		return fmt.Errorf("validate patched user: %w", err)
+	}
+
+	*u = tmp
+	return nil
+}
