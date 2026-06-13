@@ -11,6 +11,7 @@ import (
 	"github.com/Lesnekkk/golang-todo-app/internal/core/config"
 	core_logger "github.com/Lesnekkk/golang-todo-app/internal/core/logger"
 	core_postgres "github.com/Lesnekkk/golang-todo-app/internal/core/repository/postgres"
+	core_redis "github.com/Lesnekkk/golang-todo-app/internal/core/repository/redis"
 	core_http_middleware "github.com/Lesnekkk/golang-todo-app/internal/core/transport/http/middlewear"
 
 	statistics_postgres "github.com/Lesnekkk/golang-todo-app/internal/features/statistics/repository/postgres"
@@ -18,10 +19,12 @@ import (
 	statistics_http "github.com/Lesnekkk/golang-todo-app/internal/features/statistics/transport/http"
 
 	users_postgres "github.com/Lesnekkk/golang-todo-app/internal/features/users/repository/postgres"
+	users_redis "github.com/Lesnekkk/golang-todo-app/internal/features/users/repository/redis"
 	users_service "github.com/Lesnekkk/golang-todo-app/internal/features/users/service"
 	users_http "github.com/Lesnekkk/golang-todo-app/internal/features/users/transport/http"
 
 	tasks_postgres "github.com/Lesnekkk/golang-todo-app/internal/features/tasks/repository/postgres"
+	tasks_redis "github.com/Lesnekkk/golang-todo-app/internal/features/tasks/repository/redis"
 	tasks_service "github.com/Lesnekkk/golang-todo-app/internal/features/tasks/service"
 	tasks_http "github.com/Lesnekkk/golang-todo-app/internal/features/tasks/transport/http"
 
@@ -48,15 +51,23 @@ func main() {
 	}
 	defer pool.Close()
 
+	redisClient, err := core_redis.NewClient(context.Background(), cfg.RedisAddr())
+	if err != nil {
+		log.Fatalf("redis: %v", err)
+	}
+	defer redisClient.Close()
+
 	// repositories
 	usersRepo := users_postgres.NewUserPostgresRepository(pool)
+	usersCache := users_redis.NewUsersRedisRepository(redisClient)
 	tasksRepo := tasks_postgres.NewTasksPostgresRepository(pool)
+	tasksCache := tasks_redis.NewTasksRedisRepository(redisClient)
 	statsRepo := statistics_postgres.NewStatisticsPostgresRepository(pool)
 	webRepo := web_fs_repository.NewWebRepository()
 
 	// services
-	usersService := users_service.NewUsersService(usersRepo)
-	tasksService := tasks_service.NewTaskService(tasksRepo)
+	usersService := users_service.NewUsersService(usersRepo, usersCache)
+	tasksService := tasks_service.NewTaskService(tasksRepo, tasksCache)
 	statsService := statistics_service.NewStatisticsService(statsRepo)
 	webSvc := web_service.NewWebService(webRepo)
 

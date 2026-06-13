@@ -6,10 +6,10 @@ export PROJECT_ROOT=$(shell pwd)
 
 
 env-up:
-	@docker compose up -d todoapp-postgres
+	@docker compose up -d todoapp-postgres todoapp-redis
 
 env-down:
-	@docker compose down todoapp-postgres
+	@docker compose down todoapp-postgres todoapp-redis
 	
 env-cleanup:
 	@read -p "Очистить все volume окружения?[y/N]: " ans; \

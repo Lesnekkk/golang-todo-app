@@ -16,6 +16,9 @@ type Config struct {
 	PostgresHost     string `envconfig:"POSTGRES_HOST"     required:"true"`
 	PostgresPort     int    `envconfig:"POSTGRES_PORT"     required:"true"`
 
+	RedisHost string `envconfig:"REDIS_HOST" required:"true"`
+	RedisPort int    `envconfig:"REDIS_PORT" required:"true"`
+
 	Logger core_logger.LoggerConfig
 }
 
@@ -25,6 +28,10 @@ func New() (Config, error) {
 		return Config{}, fmt.Errorf("process config: %w", err)
 	}
 	return cfg, nil
+}
+
+func (c Config) RedisAddr() string {
+	return fmt.Sprintf("%s:%d", c.RedisHost, c.RedisPort)
 }
 
 func (c Config) PostgresDSN() string {

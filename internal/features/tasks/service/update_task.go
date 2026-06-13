@@ -23,5 +23,7 @@ func (s *TasksService) PatchTask(ctx context.Context, id uuid.UUID, patch domain
 		return domain.Task{}, fmt.Errorf("update task: %w", err)
 	}
 
+	s.cache.DeleteTask(ctx, id)
+
 	return updated, nil
 }

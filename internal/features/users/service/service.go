@@ -15,10 +15,17 @@ type UserRepository interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
-type UsersService struct {
-	repo UserRepository
+type UserCache interface {
+	GetByID(ctx context.Context, id uuid.UUID) (domain.User, error)
+	SetUser(ctx context.Context, user domain.User) error
+	DeleteUser(ctx context.Context, id uuid.UUID) error
 }
 
-func NewUsersService(repo UserRepository) *UsersService {
-	return &UsersService{repo: repo}
+type UsersService struct {
+	repo  UserRepository
+	cache UserCache
+}
+
+func NewUsersService(repo UserRepository, cache UserCache) *UsersService {
+	return &UsersService{repo: repo, cache: cache}
 }

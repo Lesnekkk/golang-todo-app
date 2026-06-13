@@ -15,10 +15,17 @@ type TaskRepository interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
-type TasksService struct {
-	repo TaskRepository
+type TaskCache interface {
+	GetByID(ctx context.Context, id uuid.UUID) (domain.Task, error)
+	SetTask(ctx context.Context, task domain.Task) error
+	DeleteTask(ctx context.Context, id uuid.UUID) error
 }
 
-func NewTaskService(repo TaskRepository) *TasksService {
-	return &TasksService{repo: repo}
+type TasksService struct {
+	repo  TaskRepository
+	cache TaskCache
+}
+
+func NewTaskService(repo TaskRepository, cache TaskCache) *TasksService {
+	return &TasksService{repo: repo, cache: cache}
 }

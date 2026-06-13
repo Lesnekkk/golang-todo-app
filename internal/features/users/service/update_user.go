@@ -23,5 +23,7 @@ func (s *UsersService) PatchUser(ctx context.Context, id uuid.UUID, patch domain
 		return domain.User{}, fmt.Errorf("update user: %w", err)
 	}
 
+	s.cache.DeleteUser(ctx, id)
+
 	return updated, nil
 }
